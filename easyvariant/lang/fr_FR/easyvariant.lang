@@ -1,0 +1,50 @@
+<?php
+/**
+ * EasyVariant French Language File
+ * 
+ * @package EasyVariant
+ * @author  Claude AI
+ * @version 1.0.0
+ */
+
+// Module description
+$langs->trans["EasyVariantDescription"] = "Filtrage intelligent des attributs de variantes selon le template configuré sur chaque produit";
+
+// General
+$langs->trans["EasyVariant"] = "EasyVariant";
+$langs->trans["EasyVariantSetup"] = "Configuration EasyVariant";
+$langs->trans["EasyVariantAbout"] = "À propos d'EasyVariant";
+
+// Configuration
+$langs->trans["EasyVariantDebugMode"] = "Mode debug";
+$langs->trans["EasyVariantDebugModeHelp"] = "Affiche des informations de debug dans la console du navigateur";
+$langs->trans["EasyVariantSave"] = "Sauvegarder";
+$langs->trans["EasyVariantConfigUpdated"] = "Configuration mise à jour avec succès";
+
+// Messages
+$langs->trans["EasyVariantFilteringActive"] = "EasyVariant actif : %s attribut(s) configuré(s) pour ce produit";
+$langs->trans["EasyVariantNoTemplate"] = "Aucun template d'attributs configuré pour ce produit";
+$langs->trans["EasyVariantFilterApplied"] = "Filtrage des attributs appliqué";
+
+// Help
+$langs->trans["EasyVariantHowItWorks"] = "Comment ça fonctionne";
+$langs->trans["EasyVariantStep1"] = "Configuration du produit : Sur la fiche produit, utilisez l'extrafield 'Template de variantes' pour sélectionner les attributs autorisés";
+$langs->trans["EasyVariantStep2"] = "Filtrage automatique : Lors de la création d'une nouvelle variante, seuls les attributs sélectionnés s'affichent";
+$langs->trans["EasyVariantStep3"] = "Interface simplifiée : Plus de confusion avec des attributs non pertinents";
+
+$langs->trans["EasyVariantExtrafieldConfig"] = "Configuration de l'extrafield";
+$langs->trans["EasyVariantExtrafieldCode"] = "Code : vartemplate";
+$langs->trans["EasyVariantExtrafieldType"] = "Type : Liste de sélection (n choix) issue d'une table";
+$langs->trans["EasyVariantExtrafieldValue"] = "Valeur : product_attribute:CONCAT(position, '. ', label):rowid::";
+
+$langs->trans["EasyVariantExample"] = "Exemple d'utilisation";
+$langs->trans["EasyVariantExampleText"] = "Pour un t-shirt, sélectionnez seulement 'Taille' et 'Couleur' dans le template. Lors de la création de variantes, vous ne verrez que ces deux attributs au lieu de tous les attributs configurés dans Dolibarr.";
+
+// Statistics
+$langs->trans["EasyVariantStatistics"] = "Statistiques";
+$langs->trans["EasyVariantStatsProductsWithTemplate"] = "Produits avec template configuré";
+$langs->trans["EasyVariantStatsDebugEnabled"] = "Mode debug activé";
+
+// Permissions
+$langs->trans["Permission500201"] = "Utiliser EasyVariant";
+?>
