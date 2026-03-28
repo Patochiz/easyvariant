@@ -70,11 +70,13 @@ class ActionsEasyVariant
      */
     public function printCommonFooter($parameters, &$object, &$action, $hookmanager)
     {
-        if (!$this->shouldProcess()) {
-            return 0;
+        if ($this->shouldProcess()) {
+            $this->processVariantPage();
         }
-        
-        $this->processVariantPage();
+
+        // Auto-tagging des variantes (s'exécute après toutes les opérations DB)
+        $this->processAutoTagging();
+
         return 0;
     }
     
@@ -160,6 +162,57 @@ class ActionsEasyVariant
                     self::$config_sent = true;
                 }
             }
+        }
+    }
+
+    /**
+     * Auto-tagging des variantes sur la page combinations.php
+     * S'exécute dans printCommonFooter, après toutes les opérations DB
+     */
+    private function processAutoTagging()
+    {
+        global $conf;
+
+        dol_syslog("EasyVariant::processAutoTagging() called - URI: ".$_SERVER['REQUEST_URI'], LOG_INFO);
+
+        if (empty($conf->global->AUTOTAGVARIANT_ENABLED)) {
+            dol_syslog("EasyVariant::processAutoTagging() AUTOTAGVARIANT_ENABLED is empty/disabled", LOG_WARNING);
+            return;
+        }
+
+        $uri = $_SERVER['REQUEST_URI'];
+        if (strpos($uri, '/variants/combinations.php') === false) {
+            return;
+        }
+
+        $productId = GETPOST('id', 'int');
+        if ($productId <= 0) {
+            dol_syslog("EasyVariant::processAutoTagging() no product ID in URL", LOG_WARNING);
+            return;
+        }
+
+        dol_syslog("EasyVariant::processAutoTagging() processing parent product #$productId", LOG_INFO);
+
+        try {
+            dol_include_once('/easyvariant/class/autotagvariant.class.php');
+            $autoTag = new AutoTagVariant($this->db);
+            $result = $autoTag->processUntaggedVariantsOfParent($productId);
+            dol_syslog("EasyVariant::processAutoTagging() result: $result variant(s), "
+                .$autoTag->created_categories." cat created, "
+                .$autoTag->assigned_products." assigned, "
+                .count($autoTag->errors)." errors", LOG_INFO);
+            if (!empty($autoTag->errors)) {
+                foreach ($autoTag->errors as $err) {
+                    dol_syslog("EasyVariant::processAutoTagging() ERROR: ".$err, LOG_ERR);
+                }
+            }
+            if (!empty($autoTag->logs)) {
+                foreach ($autoTag->logs as $log) {
+                    dol_syslog("EasyVariant::processAutoTagging() LOG: ".$log, LOG_DEBUG);
+                }
+            }
+        } catch (Exception $e) {
+            dol_syslog("EasyVariant::processAutoTagging() EXCEPTION: ".$e->getMessage(), LOG_ERR);
         }
     }
 }

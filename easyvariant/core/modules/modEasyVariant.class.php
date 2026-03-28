@@ -4,7 +4,7 @@
  * 
  * @package EasyVariant
  * @author  Claude AI
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 dol_include_once('/core/modules/DolibarrModules.class.php');
@@ -28,20 +28,20 @@ class modEasyVariant extends DolibarrModules
         $this->family = "products";
         $this->module_position = 91;
         $this->name = preg_replace('/^mod/i', '', get_class($this));
-        $this->description = "EasyVariant - Filtrage intelligent des attributs de variantes";
-        $this->descriptionlong = "Module pour filtrer les attributs de variantes selon l'extrafield 'vartemplate' configuré sur chaque produit. Simplifie l'interface native de création de variantes en n'affichant que les attributs pertinents.";
+        $this->description = "EasyVariant - Filtrage et auto-tagging des variantes";
+        $this->descriptionlong = "Module pour filtrer les attributs de variantes selon l'extrafield 'vartemplate' et créer automatiquement des tags (catégories) pour chaque variante basés sur ses attributs.";
         
         // Version info
-        $this->version = '1.0.0';
+        $this->version = '2.0.0';
         $this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
         $this->picto = 'product';
         
         // Module author
-        $this->editor_name = 'Claude AI';
+        $this->editor_name = 'DIAMANT INDUSTRIE';
         $this->editor_url = '';
         
         // Dependencies
-        $this->depends = array('modProduct');
+        $this->depends = array('modProduct', 'modCategorie');
         $this->requiredby = array();
         $this->conflictwith = array();
         $this->langfiles = array("easyvariant@easyvariant");
@@ -70,6 +70,7 @@ class modEasyVariant extends DolibarrModules
         
         // Module parts
         $this->module_parts = array(
+            'triggers' => 1,
             'hooks' => array(
                 'main'
             ),
@@ -98,6 +99,14 @@ class modEasyVariant extends DolibarrModules
         // Initialize module configuration
         if (!isset($conf->global->EASYVARIANT_DEBUG)) {
             dolibarr_set_const($this->db, "EASYVARIANT_DEBUG", "0", 'chaine', 0, '', $conf->entity);
+        }
+
+        // AutoTagVariant configuration
+        if (!isset($conf->global->AUTOTAGVARIANT_ENABLED)) {
+            dolibarr_set_const($this->db, "AUTOTAGVARIANT_ENABLED", "1", 'chaine', 0, '', $conf->entity);
+        }
+        if (!isset($conf->global->AUTOTAGVARIANT_DEBUG)) {
+            dolibarr_set_const($this->db, "AUTOTAGVARIANT_DEBUG", "0", 'chaine', 0, '', $conf->entity);
         }
         
         return $this->_init(array(), $options);
