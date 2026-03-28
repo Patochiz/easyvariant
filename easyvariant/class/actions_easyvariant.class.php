@@ -196,7 +196,7 @@ class ActionsEasyVariant
         try {
             dol_include_once('/easyvariant/class/autotagvariant.class.php');
             $autoTag = new AutoTagVariant($this->db);
-            $result = $autoTag->processAllVariantsOfParent($productId);
+            $result = $autoTag->processUntaggedVariantsOfParent($productId);
             dol_syslog("EasyVariant::processAutoTagging() result: $result variant(s), "
                 .$autoTag->created_categories." cat created, "
                 .$autoTag->assigned_products." assigned, "

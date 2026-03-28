@@ -181,6 +181,44 @@ class AutoTagVariant
     }
 
     /**
+     * Traite uniquement les variantes non taguées d'un parent.
+     * Utilisé par le hook pour éviter de retraiter toutes les variantes à chaque page load.
+     *
+     * @param  int  $parentProductId
+     * @return int  Nombre de variantes traitées
+     */
+    public function processUntaggedVariantsOfParent($parentProductId)
+    {
+        $parentCategories = $this->getProductCategories($parentProductId);
+        if (empty($parentCategories)) {
+            return 0;
+        }
+
+        $variants = $this->getVariantProductIds($parentProductId);
+        $count = 0;
+
+        foreach ($variants as $variantId) {
+            // Vérifier si la variante a déjà des tags sous les catégories du parent
+            $hasSubTags = false;
+            foreach ($parentCategories as $parentCatId) {
+                if ($this->variantHasSubTags($variantId, $parentCatId)) {
+                    $hasSubTags = true;
+                    break;
+                }
+            }
+
+            if (!$hasSubTags) {
+                $result = $this->processVariant($variantId);
+                if ($result > 0) {
+                    $count++;
+                }
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * Traite TOUTES les variantes de la base dont le parent a un vartemplate configuré.
      *
      * @param  bool $dryRun
@@ -225,7 +263,7 @@ class AutoTagVariant
         for ($i = 0; $i < $maxIterations; $i++) {
             $sql  = "SELECT c.rowid, c.label, c.fk_parent";
             $sql .= " FROM ".MAIN_DB_PREFIX."categorie as c";
-            $sql .= " WHERE c.type = ".Categorie::TYPE_PRODUCT;
+            $sql .= " WHERE c.type = '".$this->db->escape(Categorie::TYPE_PRODUCT)."'";
             $sql .= " AND c.rowid NOT IN (SELECT fk_parent FROM ".MAIN_DB_PREFIX."categorie WHERE fk_parent > 0)";
             $sql .= " AND c.rowid NOT IN (SELECT fk_categorie FROM ".MAIN_DB_PREFIX."categorie_product)";
 
@@ -482,7 +520,7 @@ class AutoTagVariant
     {
         $sql  = "SELECT rowid FROM ".MAIN_DB_PREFIX."categorie";
         $sql .= " WHERE fk_parent = ".intval($parentCatId);
-        $sql .= " AND type = ".Categorie::TYPE_PRODUCT;
+        $sql .= " AND type = '".$this->db->escape(Categorie::TYPE_PRODUCT)."'";
         $sql .= " AND label = '".$this->db->escape($label)."'";
         $sql .= " LIMIT 1";
 
@@ -527,13 +565,32 @@ class AutoTagVariant
     }
 
     /**
+     * Vérifie si une variante a déjà des tags dans les sous-catégories d'une catégorie parente.
+     */
+    private function variantHasSubTags($variantProductId, $parentCatId)
+    {
+        $sql  = "SELECT COUNT(*) as nb FROM ".MAIN_DB_PREFIX."categorie_product cp";
+        $sql .= " INNER JOIN ".MAIN_DB_PREFIX."categorie c ON c.rowid = cp.fk_categorie";
+        $sql .= " WHERE cp.fk_product = ".intval($variantProductId);
+        $sql .= " AND c.fk_parent = ".intval($parentCatId);
+        $sql .= " AND c.type = '".$this->db->escape(Categorie::TYPE_PRODUCT)."'";
+
+        $resql = $this->db->query($sql);
+        if ($resql) {
+            $obj = $this->db->fetch_object($resql);
+            return ($obj->nb > 0);
+        }
+        return false;
+    }
+
+    /**
      * Retire un produit de toutes les sous-catégories directes d'une catégorie donnée.
      */
     private function removeFromSubcategories($productId, $rootCatId)
     {
         $sql  = "SELECT rowid FROM ".MAIN_DB_PREFIX."categorie";
         $sql .= " WHERE fk_parent = ".intval($rootCatId);
-        $sql .= " AND type = ".Categorie::TYPE_PRODUCT;
+        $sql .= " AND type = '".$this->db->escape(Categorie::TYPE_PRODUCT)."'";
 
         $resql = $this->db->query($sql);
         if (!$resql) {
@@ -566,7 +623,7 @@ class AutoTagVariant
         while (!empty($toProcess) && $depth < $maxDepth) {
             $sql  = "SELECT rowid FROM ".MAIN_DB_PREFIX."categorie";
             $sql .= " WHERE fk_parent IN (".implode(',', array_map('intval', $toProcess)).")";
-            $sql .= " AND type = ".Categorie::TYPE_PRODUCT;
+            $sql .= " AND type = '".$this->db->escape(Categorie::TYPE_PRODUCT)."'";
 
             $resql = $this->db->query($sql);
             $toProcess = array();
