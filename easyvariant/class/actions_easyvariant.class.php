@@ -70,11 +70,13 @@ class ActionsEasyVariant
      */
     public function printCommonFooter($parameters, &$object, &$action, $hookmanager)
     {
-        if (!$this->shouldProcess()) {
-            return 0;
+        if ($this->shouldProcess()) {
+            $this->processVariantPage();
         }
-        
-        $this->processVariantPage();
+
+        // Auto-tagging des variantes (s'exécute après toutes les opérations DB)
+        $this->processAutoTagging();
+
         return 0;
     }
     
@@ -160,6 +162,37 @@ class ActionsEasyVariant
                     self::$config_sent = true;
                 }
             }
+        }
+    }
+
+    /**
+     * Auto-tagging des variantes sur la page combinations.php
+     * S'exécute dans printCommonFooter, après toutes les opérations DB
+     */
+    private function processAutoTagging()
+    {
+        global $conf;
+
+        if (empty($conf->global->AUTOTAGVARIANT_ENABLED)) {
+            return;
+        }
+
+        $uri = $_SERVER['REQUEST_URI'];
+        if (strpos($uri, '/variants/combinations.php') === false) {
+            return;
+        }
+
+        $productId = GETPOST('id', 'int');
+        if ($productId <= 0) {
+            return;
+        }
+
+        try {
+            dol_include_once('/easyvariant/class/autotagvariant.class.php');
+            $autoTag = new AutoTagVariant($this->db);
+            $autoTag->processAllVariantsOfParent($productId);
+        } catch (Exception $e) {
+            dol_syslog("EasyVariant autotagging error: ".$e->getMessage(), LOG_ERR);
         }
     }
 }
