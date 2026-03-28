@@ -14,14 +14,9 @@ require_once DOL_DOCUMENT_ROOT.'/core/triggers/dolibarrtriggers.class.php';
 
 class InterfaceAutoTagVariant extends DolibarrTriggers
 {
-    /**
-     * @var DoliDB
-     */
-    private $db;
-
     public function __construct($db)
     {
-        $this->db = $db;
+        parent::__construct($db);
 
         $this->name        = preg_replace('/^Interface/i', '', get_class($this));
         $this->family      = "product";
@@ -58,23 +53,27 @@ class InterfaceAutoTagVariant extends DolibarrTriggers
             return 0;
         }
 
-        dol_include_once('/easyvariant/class/autotagvariant.class.php');
-        $autoTag = new AutoTagVariant($this->db);
+        try {
+            dol_include_once('/easyvariant/class/autotagvariant.class.php');
+            $autoTag = new AutoTagVariant($this->db);
 
-        $productId = $object->id;
+            $productId = $object->id;
 
-        // CAS 1 : Le produit est une variante → tagger directement
-        if ($this->isVariant($productId)) {
-            dol_syslog("AutoTagVariant trigger: variant #$productId ($action)", LOG_INFO);
-            $autoTag->processVariant($productId);
-            return 0;
-        }
+            // CAS 1 : Le produit est une variante → tagger directement
+            if ($this->isVariant($productId)) {
+                dol_syslog("AutoTagVariant trigger: variant #$productId ($action)", LOG_INFO);
+                $autoTag->processVariant($productId);
+                return 0;
+            }
 
-        // CAS 2 : Le produit est un parent avec template → re-tagger toutes ses variantes
-        if ($action === 'PRODUCT_MODIFY' && $this->isParentWithTemplate($productId)) {
-            dol_syslog("AutoTagVariant trigger: parent #$productId modified, reprocessing variants", LOG_INFO);
-            $autoTag->processAllVariantsOfParent($productId);
-            return 0;
+            // CAS 2 : Le produit est un parent avec template → re-tagger toutes ses variantes
+            if ($action === 'PRODUCT_MODIFY' && $this->isParentWithTemplate($productId)) {
+                dol_syslog("AutoTagVariant trigger: parent #$productId modified, reprocessing variants", LOG_INFO);
+                $autoTag->processAllVariantsOfParent($productId);
+                return 0;
+            }
+        } catch (Exception $e) {
+            dol_syslog("AutoTagVariant trigger ERROR: ".$e->getMessage(), LOG_ERR);
         }
 
         return 0;
