@@ -1,50 +1,63 @@
-<?php
-/**
- * EasyVariant French Language File
- * 
- * @package EasyVariant
- * @author  Claude AI
- * @version 1.0.0
- */
+# EasyVariant - French Language File
+# @version 2.0.0
 
-// Module description
-$langs->trans["EasyVariantDescription"] = "Filtrage intelligent des attributs de variantes selon le template configuré sur chaque produit";
+# Module
+Module500200Name=EasyVariant
+Module500200Desc=Filtrage et auto-tagging des variantes produits
 
-// General
-$langs->trans["EasyVariant"] = "EasyVariant";
-$langs->trans["EasyVariantSetup"] = "Configuration EasyVariant";
-$langs->trans["EasyVariantAbout"] = "À propos d'EasyVariant";
+# General
+EasyVariant=EasyVariant
+EasyVariantSetup=Configuration EasyVariant
+EasyVariantAbout=À propos d'EasyVariant
 
-// Configuration
-$langs->trans["EasyVariantDebugMode"] = "Mode debug";
-$langs->trans["EasyVariantDebugModeHelp"] = "Affiche des informations de debug dans la console du navigateur";
-$langs->trans["EasyVariantSave"] = "Sauvegarder";
-$langs->trans["EasyVariantConfigUpdated"] = "Configuration mise à jour avec succès";
+# Configuration - Filtrage
+EasyVariantDebugMode=Mode debug
+EasyVariantDebugModeHelp=Affiche des informations de debug dans la console du navigateur
+EasyVariantSave=Sauvegarder
+EasyVariantConfigUpdated=Configuration mise à jour avec succès
 
-// Messages
-$langs->trans["EasyVariantFilteringActive"] = "EasyVariant actif : %s attribut(s) configuré(s) pour ce produit";
-$langs->trans["EasyVariantNoTemplate"] = "Aucun template d'attributs configuré pour ce produit";
-$langs->trans["EasyVariantFilterApplied"] = "Filtrage des attributs appliqué";
+# Configuration - AutoTag
+AutoTagVariantEnabled=Auto-tagging activé
+AutoTagVariantDebug=Mode debug auto-tagging
+AutoTagVariantConfigSaved=Configuration sauvegardée
 
-// Help
-$langs->trans["EasyVariantHowItWorks"] = "Comment ça fonctionne";
-$langs->trans["EasyVariantStep1"] = "Configuration du produit : Sur la fiche produit, utilisez l'extrafield 'Template de variantes' pour sélectionner les attributs autorisés";
-$langs->trans["EasyVariantStep2"] = "Filtrage automatique : Lors de la création d'une nouvelle variante, seuls les attributs sélectionnés s'affichent";
-$langs->trans["EasyVariantStep3"] = "Interface simplifiée : Plus de confusion avec des attributs non pertinents";
+# Messages - Filtrage
+EasyVariantFilteringActive=EasyVariant actif : %s attribut(s) configuré(s) pour ce produit
+EasyVariantNoTemplate=Aucun template d'attributs configuré pour ce produit
+EasyVariantFilterApplied=Filtrage des attributs appliqué
 
-$langs->trans["EasyVariantExtrafieldConfig"] = "Configuration de l'extrafield";
-$langs->trans["EasyVariantExtrafieldCode"] = "Code : vartemplate";
-$langs->trans["EasyVariantExtrafieldType"] = "Type : Liste de sélection (n choix) issue d'une table";
-$langs->trans["EasyVariantExtrafieldValue"] = "Valeur : product_attribute:CONCAT(position, '. ', label):rowid::";
+# Messages - AutoTag
+AutoTagProcessing=Traitement en cours...
+AutoTagCompleted=Traitement terminé : %s variante(s) traitée(s)
+AutoTagCategoriesCreated=%s catégorie(s) créée(s)
+AutoTagProductsAssigned=%s assignation(s)
+AutoTagSimulation=Simulation (aucune modification)
+AutoTagCleanEmpty=Nettoyage des catégories vides
 
-$langs->trans["EasyVariantExample"] = "Exemple d'utilisation";
-$langs->trans["EasyVariantExampleText"] = "Pour un t-shirt, sélectionnez seulement 'Taille' et 'Couleur' dans le template. Lors de la création de variantes, vous ne verrez que ces deux attributs au lieu de tous les attributs configurés dans Dolibarr.";
+# Batch
+AutoTagBatchAll=Toutes les variantes
+AutoTagBatchParent=Variantes d'un produit parent
+AutoTagSimulate=Simuler
+AutoTagExecute=Exécuter
+AutoTagClean=Nettoyer
 
-// Statistics
-$langs->trans["EasyVariantStatistics"] = "Statistiques";
-$langs->trans["EasyVariantStatsProductsWithTemplate"] = "Produits avec template configuré";
-$langs->trans["EasyVariantStatsDebugEnabled"] = "Mode debug activé";
+# Help
+EasyVariantHowItWorks=Comment ça fonctionne
+EasyVariantStep1=Configuration du produit : Sur la fiche produit, utilisez l'extrafield 'Template de variantes' pour sélectionner les attributs autorisés
+EasyVariantStep2=Filtrage automatique : Lors de la création d'une nouvelle variante, seuls les attributs sélectionnés s'affichent
+EasyVariantStep3=Auto-tagging : La variante reçoit automatiquement des tags basés sur ses attributs dans la catégorie du parent
 
-// Permissions
-$langs->trans["Permission500201"] = "Utiliser EasyVariant";
-?>
+# Extrafield config
+EasyVariantExtrafieldConfig=Configuration de l'extrafield
+EasyVariantExtrafieldCode=Code : vartemplate
+EasyVariantExtrafieldType=Type : Liste de sélection (n choix) issue d'une table
+EasyVariantExtrafieldValue=Valeur : product_attribute:CONCAT(position, '.', label):rowid::
+
+# Statistics
+EasyVariantStatistics=Statistiques
+EasyVariantStatsProductsWithTemplate=Produits avec template configuré
+EasyVariantStatsTotalVariants=Variantes totales
+EasyVariantStatsEligibleVariants=Variantes éligibles (parent avec template)
+
+# Permissions
+Permission500200=Utiliser EasyVariant
