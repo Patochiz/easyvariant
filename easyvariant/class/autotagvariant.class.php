@@ -103,6 +103,23 @@ class AutoTagVariant
         }
 
         foreach ($parentCategories as $parentCatId) {
+            // Assigner la variante à la catégorie du parent (ex: Plafond>>Molene)
+            if (!$dryRun) {
+                if (!$this->isProductInCategory($variantProductId, $parentCatId)) {
+                    $cat = new Categorie($this->db);
+                    if ($cat->fetch($parentCatId) > 0) {
+                        $result = $cat->add_type($product, Categorie::TYPE_PRODUCT);
+                        if ($result >= 0) {
+                            $this->assigned_products++;
+                            $this->log("Produit #$variantProductId ({$product->ref}) → catégorie parent #{$parentCatId} ({$cat->label})");
+                        }
+                    }
+                }
+            } else {
+                $path = $this->buildCategoryPathPreview($parentCatId);
+                $this->log("[SIMULATION] {$product->ref} → $path (catégorie parent)");
+            }
+
             // Retirer la variante des anciennes sous-catégories (gestion changement template)
             if (!$dryRun) {
                 $this->removeFromSubcategories($variantProductId, $parentCatId);
