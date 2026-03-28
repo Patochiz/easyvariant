@@ -173,7 +173,10 @@ class ActionsEasyVariant
     {
         global $conf;
 
+        dol_syslog("EasyVariant::processAutoTagging() called - URI: ".$_SERVER['REQUEST_URI'], LOG_INFO);
+
         if (empty($conf->global->AUTOTAGVARIANT_ENABLED)) {
+            dol_syslog("EasyVariant::processAutoTagging() AUTOTAGVARIANT_ENABLED is empty/disabled", LOG_WARNING);
             return;
         }
 
@@ -184,15 +187,32 @@ class ActionsEasyVariant
 
         $productId = GETPOST('id', 'int');
         if ($productId <= 0) {
+            dol_syslog("EasyVariant::processAutoTagging() no product ID in URL", LOG_WARNING);
             return;
         }
+
+        dol_syslog("EasyVariant::processAutoTagging() processing parent product #$productId", LOG_INFO);
 
         try {
             dol_include_once('/easyvariant/class/autotagvariant.class.php');
             $autoTag = new AutoTagVariant($this->db);
-            $autoTag->processAllVariantsOfParent($productId);
+            $result = $autoTag->processAllVariantsOfParent($productId);
+            dol_syslog("EasyVariant::processAutoTagging() result: $result variant(s), "
+                .$autoTag->created_categories." cat created, "
+                .$autoTag->assigned_products." assigned, "
+                .count($autoTag->errors)." errors", LOG_INFO);
+            if (!empty($autoTag->errors)) {
+                foreach ($autoTag->errors as $err) {
+                    dol_syslog("EasyVariant::processAutoTagging() ERROR: ".$err, LOG_ERR);
+                }
+            }
+            if (!empty($autoTag->logs)) {
+                foreach ($autoTag->logs as $log) {
+                    dol_syslog("EasyVariant::processAutoTagging() LOG: ".$log, LOG_DEBUG);
+                }
+            }
         } catch (Exception $e) {
-            dol_syslog("EasyVariant autotagging error: ".$e->getMessage(), LOG_ERR);
+            dol_syslog("EasyVariant::processAutoTagging() EXCEPTION: ".$e->getMessage(), LOG_ERR);
         }
     }
 }
