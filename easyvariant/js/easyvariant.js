@@ -92,16 +92,18 @@ function showFilteringNotification(attributeCount) {
             <span class="easyvariant-text">
                 EasyVariant : ${attributeCount} attribut(s) configuré(s) pour ce produit
             </span>
-            <button class="easyvariant-close" onclick="$(this).parent().fadeOut()">×</button>
+            <button class="easyvariant-close" onclick="$(this).parent().animate({top:'-60px',opacity:0},300,function(){$(this).remove()})">×</button>
         </div>
     `);
     
-    // Ajouter au début du contenu principal
-    $('.fiche, .card, .page-content').first().prepend(notification);
-    
-    // Auto-masquer après 4 secondes
+    // Ajouter en overlay sur le body
+    $('body').append(notification);
+
+    // Auto-masquer après 4 secondes avec animation vers le haut
     setTimeout(() => {
-        notification.fadeOut();
+        notification.animate({ top: '-60px', opacity: 0 }, 300, function() {
+            $(this).remove();
+        });
     }, 4000);
 }
 
